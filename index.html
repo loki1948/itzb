@@ -146,6 +146,7 @@ body.locked .modal{box-shadow:0 18px 50px #0002}
 .rq-contact{background:#e9f8ef;border-radius:12px;padding:10px 12px;font-size:14px;color:#0f7a3f}.rq-contact a{color:inherit;font-weight:900}
 .rq-actions{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:6px}.g-card .rq-actions .btn,.rq-actions .btn{width:100%;margin-top:0;padding:12px 8px;font-size:15px}
 .btn:disabled{opacity:.55;cursor:not-allowed}
+.demo-banner{background:#fff4c2;border-bottom:1px solid var(--yellow);color:#5c4400;font-size:14px;text-align:center;padding:9px 5%;line-height:1.4}
 @media(max-width:560px){.rq-tabs .mode-tab{padding:9px 4px;font-size:13px}.cp-section-head h2{font-size:21px}}
 @media(max-width:520px){.filters{grid-template-columns:1fr}.swipe-wrap{height:560px}.topbar{padding:0 4%}.nav .outline{display:none}}
 </style>
@@ -155,6 +156,7 @@ body.locked .modal{box-shadow:0 18px 50px #0002}
   <div class="brand" onclick="goHome()" style="cursor:pointer"><img id="brandLogo" alt="ItzB logo"><span>ItzB</span></div>
   <nav class="nav" id="nav"></nav>
 </header>
+<div id="demoBanner" class="demo-banner hidden">👀 <b>Online demo</b> — browse the home page and helpers freely. Login, booking and requests are switched off here.</div>
 
 <section id="landing" class="hero">
   <div class="hero-inner">
@@ -440,6 +442,13 @@ body.locked .modal{box-shadow:0 18px 50px #0002}
    <p class="login-error" id="rqError"></p>
    <div style="display:flex;gap:10px;margin-top:8px"><button type="button" class="btn outline" style="flex:1" onclick="closeOverlay()">Cancel</button><button type="button" class="btn primary" style="flex:2" id="rqSend" onclick="sendRequest()">Send request</button></div>
  </div>
+ <div class="modal hidden" id="demoModal" role="dialog" aria-modal="true" aria-labelledby="demoTitle" style="text-align:center">
+   <div class="success-icon" style="background:var(--yellow);color:var(--black)">👀</div>
+   <h2 id="demoTitle">This is an online demo</h2>
+   <p id="demoMsg" style="color:#555;line-height:1.6"></p>
+   <p class="opt" style="font-size:14px">Accounts, login, bookings and helper requests need the ItzB server, which isn't running in this demo.</p>
+   <div style="display:flex;gap:10px;margin-top:16px"><button type="button" class="btn outline" style="flex:1" onclick="closeOverlay()">Close</button><button type="button" class="btn primary" style="flex:2" onclick="showGuest()">Browse helpers as guest</button></div>
+ </div>
 </div>
 <div id="toast" class="toast"></div>
 
@@ -476,14 +485,14 @@ let currentUser=null, authMode='login';
 const $=id=>document.getElementById(id);
 async function api(path,opts={}){
  let r;try{r=await fetch('/api'+path,{method:opts.method||'GET',headers:{'Content-Type':'application/json'},credentials:'same-origin',body:opts.body?JSON.stringify(opts.body):undefined})}
- catch{throw new Error('Cannot reach the ItzB server. Start it with "npm start" and open http://localhost:3000')}
+ catch{throw new Error(DEMO_MODE?'This feature isn\'t available in the online demo.':'Cannot reach the ItzB server. Start it with "npm start" and open http://localhost:3000')}
  let data={};try{data=await r.json()}catch{}
  if(!r.ok){const e=new Error(data.error||('Something went wrong ('+r.status+')'));e.status=r.status;throw e}
  return data}
 function fillSelect(id,list,val){$(id).innerHTML=list.map(o=>`<option${o===val?' selected':''}>${o}</option>`).join('')}
 function fillChips(id,list,checked=[]){$(id).innerHTML=list.map(o=>`<label><input type="checkbox" value="${o}"${checked.includes(o)?' checked':''}>${o}</label>`).join('')}
 const chipValues=id=>[...$(id).querySelectorAll('input:checked')].map(i=>i.value);
-function showModal(id){$('modalBg').classList.remove('hidden');['loginModal','profileModal','customerModal','requestModal'].forEach(m=>$(m).classList.toggle('hidden',m!==id))}
+function showModal(id){$('modalBg').classList.remove('hidden');['loginModal','profileModal','customerModal','requestModal','demoModal'].forEach(m=>$(m).classList.toggle('hidden',m!==id))}
 function renderNav(){
  $('nav').innerHTML=currentUser?`<span class="hello">Hi, ${escapeHtml((currentUser.profile&&currentUser.profile.personal.name)||currentUser.login)}</span><button class="btn outline" onclick="openProfile(true)">Edit profile</button><button class="btn dark" onclick="logout()">Log out</button>`:''}
 function setAuthMode(m){
@@ -496,7 +505,14 @@ function showLogin(){
  currentUser=null;renderNav();document.body.classList.add('locked');$('howItWorks').classList.remove('hidden');
  ['app','guest','bookingPage','chatSection','ratingSection','plansSection','boostPage','checkoutPage','successPage','historyPage'].forEach(id=>$(id).classList.add('hidden'));
  $('loginPass').value='';setAuthMode('login');showModal('loginModal')}
-function openLogin(){showLogin()}
+function openLogin(){if(DEMO_MODE)return showDemoNotice('Sign-up and login are switched off in this online demo.');showLogin()}
+// ---------- demo mode ----------
+// Turned on automatically when the ItzB server can't be reached — e.g. the site is hosted on
+// GitHub Pages (static files only) or index.html is opened directly. Server features are
+// replaced by a friendly notice; the home page, demo profiles and guest browsing still work.
+let DEMO_MODE=false;
+function enableDemoMode(){DEMO_MODE=true;$('demoBanner').classList.remove('hidden')}
+function showDemoNotice(msg){$('demoMsg').textContent=msg;showModal('demoModal')}
 // Public home (landing hero + how it works + demo customer profiles) for logged-out visitors.
 function showLanding(){
  currentUser=null;document.body.classList.remove('locked');$('modalBg').classList.add('hidden');
@@ -745,7 +761,7 @@ const customerFacts=(c,demo)=>[['How soon',c.urgency],['Preferred time',c.prefer
 function openCustomerProfile(id,demo){
  const c=(demo?DEMO_CUSTOMERS:customers).find(x=>x.id===id);if(!c)return;
  showProfileModal({name:c.name,area:c.area,demo,tagsTitle:'🙋 Needs help with',tags:c.categories,desc:c.description,facts:customerFacts(c,demo)})}
-const OVERLAYS=['customerModal','requestModal'];
+const OVERLAYS=['customerModal','requestModal','demoModal'];
 const overlayOpen=()=>OVERLAYS.some(m=>!$(m).classList.contains('hidden'));
 function closeOverlay(){OVERLAYS.forEach(m=>$(m).classList.add('hidden'));$('modalBg').classList.add('hidden')}
 const closeCustomerProfile=closeOverlay;
@@ -917,6 +933,7 @@ function renderBookingSummary(){
  $('bsDuration').textContent=$('bkDuration').value;$('bsPayment').textContent=booking.pay;$('bsTotal').textContent='₹'+total;
  $('bkSubmit').textContent=booking.pay==='Cash'?`Confirm booking · pay ₹${total} in cash`:`Pay ₹${total} with ${booking.pay}`}
 async function submitBooking(){
+ if(DEMO_MODE)return showDemoNotice('Booking and payment are switched off in this online demo — no booking was made.');
  const err=$('bkError'),fullName=$('bkName').value.trim(),date=$('bkDate').value;
  const explore=[...chipValues('bkTopics'),$('bkExplore').value.trim()].filter(Boolean).join(' — ');
  if(fullName.length<2){err.textContent='Please enter your full name.';$('bkName').focus();return}
@@ -953,7 +970,12 @@ function completeTask(){document.getElementById('chatSection').classList.add('hi
 function rate(n){selectedRating=n;document.querySelectorAll('#stars span').forEach((s,i)=>s.textContent=i<n?'★':'☆')}
 function submitRating(){if(!selectedRating){toast('Please choose a rating');return}toast('Thanks! Rating submitted.');setTimeout(()=>{document.getElementById('ratingSection').classList.add('hidden');document.getElementById('app').classList.remove('hidden');renderCards()},700)}
 function toast(t){const e=document.getElementById('toast');e.textContent=t;e.style.display='block';clearTimeout(window.tt);window.tt=setTimeout(()=>e.style.display='none',1800)}
-(async()=>{setAuthMode('login');try{const {user}=await api('/me');onLoggedIn(user)}catch{showLanding()}})();
+(async()=>{setAuthMode('login');
+ try{const {user}=await api('/me');onLoggedIn(user)}
+ catch(e){
+  // 401 = server is running, just not logged in. No response / 404 = no ItzB server (static hosting) → demo mode.
+  if(e.status!==401&&(!e.status||e.status===404||e.status===405))enableDemoMode();
+  showLanding()}})();
 </script>
 </body>
 </html>
