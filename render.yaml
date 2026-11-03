@@ -1,0 +1,22 @@
+# Render Blueprint for ItzB — https://render.com/docs/blueprint-spec
+# In Render: New → Blueprint → pick this repository → Apply.
+services:
+  - type: web
+    name: itzb
+    runtime: node
+    plan: starter            # paid plan — needed for the persistent disk below
+    buildCommand: npm install
+    startCommand: npm start  # server reads PORT from Render automatically
+    healthCheckPath: /
+    autoDeploy: true         # redeploy on every push to main
+    envVars:
+      - key: NODE_VERSION
+        value: "20"
+      - key: NODE_ENV
+        value: production    # turns on the Secure (HTTPS-only) session cookie
+    # Accounts, bookings and customer requests are JSON files in server/data/.
+    # This disk keeps them safe across restarts and redeploys.
+    disk:
+      name: itzb-data
+      mountPath: /opt/render/project/src/server/data
+      sizeGB: 1

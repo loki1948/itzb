@@ -12,6 +12,8 @@ const DATA_DIR = path.join(__dirname, 'data');
 const USERS_FILE = path.join(DATA_DIR, 'users.json');
 const SESSION_COOKIE = 'itzb_session';
 const SESSION_TTL_MS = 7 * 24 * 60 * 60 * 1000; // 7 days
+// In production (HTTPS, e.g. on Render) the session cookie is only ever sent over HTTPS.
+const COOKIE_SECURE = process.env.NODE_ENV === 'production' ? '; Secure' : '';
 
 const ROLES = ['need', 'help', 'both'];
 const CATEGORIES = ['Computer', 'Phone', 'Repair', 'Study', 'Home', 'Other'];
@@ -166,7 +168,7 @@ function parseCookies(header = '') {
 function startSession(res, userId) {
   const token = crypto.randomBytes(32).toString('hex');
   sessions.set(token, { userId, expires: Date.now() + SESSION_TTL_MS });
-  res.setHeader('Set-Cookie', `${SESSION_COOKIE}=${token}; HttpOnly; SameSite=Lax; Path=/; Max-Age=${SESSION_TTL_MS / 1000}`);
+  res.setHeader('Set-Cookie', `${SESSION_COOKIE}=${token}; HttpOnly; SameSite=Lax; Path=/; Max-Age=${SESSION_TTL_MS / 1000}${COOKIE_SECURE}`);
 }
 function requireAuth(req, res, next) {
   const token = parseCookies(req.headers.cookie)[SESSION_COOKIE];
@@ -232,7 +234,7 @@ app.post('/api/login', (req, res) => {
 app.post('/api/logout', (req, res) => {
   const token = parseCookies(req.headers.cookie)[SESSION_COOKIE];
   if (token) sessions.delete(token);
-  res.setHeader('Set-Cookie', `${SESSION_COOKIE}=; HttpOnly; SameSite=Lax; Path=/; Max-Age=0`);
+  res.setHeader('Set-Cookie', `${SESSION_COOKIE}=; HttpOnly; SameSite=Lax; Path=/; Max-Age=0${COOKIE_SECURE}`);
   res.json({ ok: true });
 });
 
