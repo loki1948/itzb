@@ -1,0 +1,17 @@
+{
+  "name": "itzb",
+  "version": "1.0.0",
+  "private": true,
+  "description": "ItzB - quick help nearby, with a local authentication backend",
+  "main": "server/server.js",
+  "engines": {
+    "node": ">=18"
+  },
+  "scripts": {
+    "start": "node server/server.js"
+  },
+  "dependencies": {
+    "express": "^4.21.2",
+    "pdfkit": "^0.20.2"
+  }
+}

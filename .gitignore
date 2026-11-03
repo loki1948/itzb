@@ -1,0 +1,19 @@
+# Dependencies (reinstalled by `npm install` on the host)
+node_modules/
+
+# Live app data: user accounts (phone numbers, password hashes), bookings and requests.
+# Never commit this — on the host it lives on the persistent disk.
+server/data/
+
+# Temporary files written while saving data
+*.tmp
+
+# Environment / secrets
+.env
+.env.*
+
+# Logs and OS clutter
+*.log
+npm-debug.log*
+.DS_Store
+Thumbs.db

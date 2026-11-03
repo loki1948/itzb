@@ -1,0 +1,393 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover">
+<title>ItzB</title>
+<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:wght@400;600;800&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#fffdf5;--surf:#fff;--ink:#16130a;--mut:#756f5c;--line:#ece6cf;--brand:#ffcf24;--soft:#fff1b8;--good:#1f9d55;--bad:#e5484d;
+box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+@media(prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#15130c;--surf:#201d12;--ink:#fff8dc;--mut:#a39c80;--line:#352f1b;--soft:#3a3210}}
+:root[data-theme="dark"]{--bg:#15130c;--surf:#201d12;--ink:#fff8dc;--mut:#a39c80;--line:#352f1b;--soft:#3a3210}
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+html,body{height:100%;margin:0;overflow:hidden}
+body{font-family:'Bricolage Grotesque',Arial,sans-serif;background:var(--bg);color:var(--ink);display:flex;justify-content:center;align-items:center}
+button,input,textarea{font:inherit;color:inherit}
+button{cursor:pointer;border:0;background:none}
+button:focus-visible,input:focus-visible,textarea:focus-visible,.role:focus-visible{outline:3px solid var(--ink);outline-offset:2px}
+.app{width:100%;max-width:480px;height:100%;max-height:100vh;margin:auto;position:relative;overflow:hidden;background:var(--bg);display:flex;flex-direction:column}
+@media(min-width:520px){.app{border:1px solid var(--line);box-shadow:0 10px 30px rgba(0,0,0,0.1)}}
+.screen{position:absolute;inset:0;display:none;flex-direction:column;overflow-y:auto;padding:20px 20px 96px;z-index:1}
+.screen.on{display:flex;animation:in .25s ease}
+@keyframes in{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:none}}
+.btn{background:var(--brand);color:#16130a;border-radius:999px;padding:14px 22px;font-weight:800;transition:transform .15s}
+.btn:active{transform:scale(.96)}
+.btn.ghost{background:transparent;border:2px solid var(--ink);color:var(--ink)}
+.btn.block{width:100%}
+h1,h2,h3,p{margin:0}
+.muted{color:var(--mut)}
+
+/* splash */
+#splash{justify-content:center;align-items:center;text-align:center;gap:14px;padding-bottom:20px;background:var(--brand);color:#16130a;z-index:5}
+.logo{font-size:96px;font-weight:800;letter-spacing:-4px;line-height:1}
+.logo i{font-style:normal;display:inline-block;animation:bz 2.4s ease-in-out infinite}
+@keyframes bz{0%,100%{transform:rotate(0)}10%{transform:rotate(-14deg) translateY(-8px)}20%{transform:rotate(10deg)}30%{transform:none}}
+#splash .btn{background:#16130a;color:#ffcf24;width:240px}
+#splash .btn.ghost{background:transparent;color:#16130a;border-color:#16130a}
+
+/* roles */
+.roles{display:grid;gap:12px;margin:22px 0}
+.role{display:flex;gap:16px;align-items:center;text-align:left;padding:18px;border-radius:22px;border:2px solid var(--line);background:var(--surf);transition:.2s;width:100%}
+.role .ic{font-size:34px;width:60px;height:60px;border-radius:18px;background:var(--soft);display:grid;place-items:center;flex-shrink:0}
+.role b{font-size:18px;display:block}
+.role.sel{border-color:var(--ink);background:var(--soft);transform:scale(1.02)}
+
+/* top */
+.top{display:flex;justify-content:space-between;align-items:center;margin-bottom:14px}
+.brand{font-size:30px;font-weight:800;letter-spacing:-1.5px}
+.icbtn{width:42px;height:42px;border-radius:50%;background:var(--surf);border:1px solid var(--line);display:grid;place-items:center;font-size:18px;position:relative;flex-shrink:0}
+.dot{position:absolute;top:6px;right:6px;width:10px;height:10px;background:var(--bad);border-radius:50%}
+.search{width:100%;padding:14px 18px;border-radius:999px;border:2px solid var(--line);background:var(--surf);outline:0}
+.search:focus{border-color:var(--ink)}
+.chips{display:flex;gap:8px;overflow-x:auto;padding:12px 0;scrollbar-width:none}
+.chips::-webkit-scrollbar{display:none}
+.chip{white-space:nowrap;padding:9px 15px;border-radius:999px;background:var(--surf);border:1px solid var(--line);font-weight:600;transition:.15s}
+.chip.on{background:var(--ink);color:var(--bg);border-color:var(--ink)}
+
+/* deck */
+.deckmeta{display:flex;justify-content:space-between;font-size:14px;margin-bottom:8px}
+.deck{position:relative;height:380px;margin-bottom:14px;touch-action:pan-y}
+.pc{position:absolute;inset:0;border-radius:28px;background:var(--surf);border:1px solid var(--line);padding:16px;display:flex;flex-direction:column;gap:10px;user-select:none;box-shadow:0 14px 30px rgba(0,0,0,0.1);will-change:transform}
+.pc.back{transform:scale(.94) translateY(16px);opacity:.7;pointer-events:none}
+.pc.top{cursor:grab;touch-action:none}
+.pc .ph{flex:1;min-height:160px;border-radius:20px;background:var(--brand);display:grid;place-items:center;font-size:80px;position:relative}
+.badge{position:absolute;top:12px;left:12px;font-size:13px;font-weight:600;background:#16130a;color:#ffcf24;border-radius:999px;padding:5px 11px}
+.badge.off{background:#6b6552;color:#fff}
+.price{position:absolute;top:12px;right:12px;font-size:13px;font-weight:800;background:#fff;color:#16130a;border-radius:999px;padding:5px 11px}
+.pc h2{font-size:24px;letter-spacing:-.5px}
+.tags{display:flex;gap:6px;flex-wrap:wrap}
+.tag{font-size:12px;padding:4px 10px;border-radius:999px;background:var(--soft)}
+.stamp{position:absolute;top:26px;font-size:30px;font-weight:800;border:4px solid;border-radius:12px;padding:2px 12px;opacity:0;transform:rotate(-14deg);pointer-events:none}
+.stamp.y{left:22px;color:var(--good);background:rgba(255,255,255,0.9)}
+.stamp.n{right:22px;color:var(--bad);transform:rotate(14deg);background:rgba(255,255,255,0.9)}
+.acts{display:flex;justify-content:center;align-items:center;gap:16px;margin-top:auto}
+.act{width:64px;height:64px;border-radius:50%;font-size:26px;background:var(--surf);border:2px solid var(--line);transition:.15s;display:grid;place-items:center}
+.act:active{transform:scale(.88)}
+.act.go{background:var(--brand);border-color:var(--brand);width:76px;height:76px}
+.act.sm{width:52px;height:52px;font-size:20px}
+.empty{height:100%;display:grid;place-content:center;text-align:center;gap:12px;padding:20px}
+.empty span{font-size:56px}
+
+/* sheet */
+.scrim{position:absolute;inset:0;background:rgba(0,0,0,0.5);opacity:0;pointer-events:none;transition:.25s;z-index:40}
+.scrim.on{opacity:1;pointer-events:auto}
+.sheet{position:absolute;left:0;right:0;bottom:0;background:var(--bg);border-radius:28px 28px 0 0;padding:14px 22px calc(26px + env(safe-area-inset-bottom,0px));transform:translateY(105%);transition:transform .3s cubic-bezier(.2,.8,.2,1);z-index:41;max-height:85%;overflow-y:auto}
+.sheet.on{transform:none}
+.grab{width:44px;height:5px;border-radius:9px;background:var(--line);margin:0 auto 16px}
+.row{display:flex;justify-content:space-between;align-items:center;margin:16px 0 8px;font-weight:600}
+input[type=range]{width:100%;accent-color:#e0a800}
+.work{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-top:8px}
+.work div{aspect-ratio:1;border-radius:14px;background:var(--soft);display:grid;place-items:center;font-size:34px}
+.rev{padding:12px;border-radius:14px;background:var(--surf);border:1px solid var(--line);margin-top:8px;font-size:14px}
+
+/* tabbar */
+.tabbar{position:absolute;left:0;right:0;bottom:0;display:none;background:var(--surf);border-top:1px solid var(--line);padding:8px 12px calc(8px + env(safe-area-inset-bottom,0px));z-index:30}
+.tabbar.on{display:flex}
+.tab{flex:1;display:grid;justify-items:center;gap:2px;padding:6px;border-radius:16px;font-size:12px;font-weight:600;color:var(--mut);position:relative}
+.tab span{font-size:22px}
+.tab.on{color:var(--ink);background:var(--soft)}
+.tab .n{position:absolute;top:2px;right:26%;background:var(--bad);color:#fff;font-size:11px;border-radius:9px;padding:0 6px}
+
+/* chat */
+.convo{display:flex;gap:12px;align-items:center;width:100%;text-align:left;padding:12px;border-radius:18px;background:var(--surf);border:1px solid var(--line);margin-bottom:10px}
+.av{width:48px;height:48px;border-radius:50%;background:var(--brand);display:grid;place-items:center;font-size:24px;flex:none}
+.convo div{min-width:0;flex:1}.convo p{white-space:nowrap;overflow:hidden;text-overflow:ellipsis;font-size:14px;color:var(--mut)}
+#thread{padding:0;gap:0}
+.chead{display:flex;align-items:center;gap:12px;padding:14px 16px;border-bottom:1px solid var(--line);background:var(--surf);flex-shrink:0}
+.msgs{flex:1;overflow-y:auto;padding:16px;display:flex;flex-direction:column;gap:8px}
+.m{max-width:78%;padding:10px 14px;border-radius:18px;background:var(--surf);border:1px solid var(--line);animation:in .2s}
+.m.me{align-self:flex-end;background:var(--brand);border-color:var(--brand);color:#16130a}
+.typing{display:flex;gap:4px;padding:14px}
+.typing i{width:7px;height:7px;border-radius:50%;background:var(--mut);animation:tp 1s infinite}
+.typing i:nth-child(2){animation-delay:.15s}.typing i:nth-child(3){animation-delay:.3s}
+@keyframes tp{50%{transform:translateY(-5px);opacity:.4}}
+.qr{display:flex;gap:8px;overflow-x:auto;padding:0 16px 8px;scrollbar-width:none;flex-shrink:0}
+.cbar{display:flex;gap:8px;padding:8px 16px calc(12px + env(safe-area-inset-bottom,0px));background:var(--surf);border-top:1px solid var(--line);flex-shrink:0}
+.cbar input{flex:1;padding:13px 16px;border-radius:999px;border:2px solid var(--line);background:var(--bg);outline:0}
+
+/* rating */
+.stars{font-size:54px;text-align:center;margin:12px 0}
+.stars button{color:var(--line);transition:.15s;padding:0 2px}
+.stars button.on{color:#f0b100;transform:scale(1.1)}
+textarea{width:100%;min-height:90px;padding:12px;border-radius:16px;border:2px solid var(--line);background:var(--surf);resize:vertical}
+.cf{position:fixed;top:-20px;font-size:26px;pointer-events:none;z-index:99;animation:fall 1.8s ease-in forwards}
+@keyframes fall{to{transform:translate(var(--dx),105vh) rotate(540deg);opacity:.2}}
+
+/* profile */
+.hero{text-align:center;padding:10px 0}
+.hero .big{width:96px;height:96px;font-size:48px;margin:0 auto 10px;background:var(--brand);border-radius:50%;display:grid;place-items:center}
+.stats{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin:18px 0}
+.stat{padding:14px 6px;text-align:center;border-radius:18px;background:var(--soft)}
+.stat b{display:block;font-size:28px}
+.tog{display:flex;justify-content:space-between;align-items:center;padding:14px 16px;border-radius:18px;background:var(--surf);border:1px solid var(--line);margin:12px 0;width:100%}
+.sw{width:50px;height:30px;border-radius:99px;background:var(--line);position:relative;transition:.2s;flex-shrink:0}
+.sw::after{content:"";position:absolute;top:3px;left:3px;width:24px;height:24px;border-radius:50%;background:#fff;transition:.2s}
+.tog[aria-pressed=true] .sw{background:var(--good)}
+.tog[aria-pressed=true] .sw::after{left:23px}
+h3.sec{margin:18px 0 8px}
+.box{padding:16px;border-radius:20px;background:var(--surf);border:1px solid var(--line)}
+.box.boost{background:var(--soft);border-color:var(--brand)}
+.pill{font-size:12px;font-weight:800;padding:4px 10px;border-radius:999px;background:var(--good);color:#fff}
+.toast{position:absolute;left:50%;top:calc(14px + env(safe-area-inset-top,0px));transform:translate(-50%,-90px);background:var(--ink);color:var(--bg);padding:11px 18px;border-radius:999px;font-weight:600;z-index:50;transition:.3s;white-space:nowrap;max-width:92%}
+.toast.on{transform:translate(-50%,0)}
+.cats{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin:16px 0}
+.cats div{padding:20px;border-radius:18px;background:var(--soft);font-weight:700}
+@media(prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
+</style>
+</head>
+<body>
+<div class="app" id="app">
+<div class="toast" id="toast" role="status"></div>
+
+<section class="screen on" id="splash">
+  <div class="logo">Itz<i>B</i></div>
+  <p style="font-size:20px">Quick help. Nearby.</p>
+  <button class="btn" onclick="go('roles')">Get started</button>
+  <button class="btn ghost" style="width:240px" onclick="go('guest')">Look around first</button>
+</section>
+
+<section class="screen" id="guest">
+  <div class="top"><div class="brand">ItzB</div><button class="btn ghost" onclick="go('splash')">Back</button></div>
+  <h1>Neighbours with skills, a swipe away</h1>
+  <p class="muted" style="margin-top:8px">Pick a category to see who is nearby once you sign in.</p>
+  <div class="cats" id="guestCats"></div>
+  <button class="btn block" onclick="go('roles')">Sign in to browse helpers</button>
+</section>
+
+<section class="screen" id="roles">
+  <div class="brand">ItzB</div>
+  <h1 style="margin-top:18px">How will you use ItzB?</h1>
+  <p class="muted" style="margin-top:6px">You can switch any time in Profile.</p>
+  <div class="roles">
+    <button class="role" data-r="need"><span class="ic">🙋</span><span><b>I need help</b>Find someone nearby</span></button>
+    <button class="role" data-r="helper"><span class="ic">🛠️</span><span><b>I’m a helper</b>Offer your skills</span></button>
+    <button class="role" data-r="both"><span class="ic">🔄</span><span><b>Both</b>Ask for help and give it</span></button>
+  </div>
+  <button class="btn block" id="roleGo">Continue</button>
+</section>
+
+<section class="screen" id="discover">
+  <div class="top"><div class="brand">ItzB</div><button class="icbtn" onclick="openSheet('fSheet')" aria-label="Filters">⚙️<i class="dot" id="fDot" hidden></i></button></div>
+  <h2 id="welcome" style="font-size:22px;margin-bottom:12px">Find help nearby</h2>
+  <input class="search" id="q" placeholder="Search a person or skill" aria-label="Search">
+  <div class="chips" id="chips"></div>
+  <div class="deckmeta"><span class="muted" id="count"></span><span class="muted">Drag the card or use the buttons</span></div>
+  <div class="deck" id="deck"></div>
+  <div class="acts">
+    <button class="act" onclick="fly('left')" aria-label="Skip">✕</button>
+    <button class="act sm" onclick="info()" aria-label="Details">ℹ️</button>
+    <button class="act sm" onclick="fly('up')" aria-label="Save">★</button>
+    <button class="act go" onclick="fly('right')" aria-label="Ask for help">✓</button>
+  </div>
+</section>
+
+<section class="screen" id="chats">
+  <h1 style="margin-bottom:14px">Chats</h1>
+  <div id="clist"></div>
+</section>
+
+<section class="screen" id="thread">
+  <div class="chead"><button class="icbtn" onclick="go('chats')" aria-label="Back">←</button><div class="av" id="tAv"></div><div style="flex:1"><b id="tName"></b><div class="muted" style="font-size:13px" id="tSub"></div></div><button class="btn" style="padding:9px 14px;font-size:14px" onclick="finish()">Done ✓</button></div>
+  <div class="msgs" id="msgs"></div>
+  <div class="qr" id="qr"></div>
+  <div class="cbar"><input id="mi" placeholder="Type a message" aria-label="Message"><button class="btn" onclick="send()">Send</button></div>
+</section>
+
+<section class="screen" id="rate">
+  <div style="text-align:center;margin-top:8vh"><div style="font-size:60px">🎉</div><h1>Task completed</h1><p class="muted" id="rSub" style="margin-top:6px">How did it go?</p></div>
+  <div class="stars" id="stars"></div>
+  <div class="chips" id="rtags" style="flex-wrap:wrap;justify-content:center"></div>
+  <textarea id="rv" placeholder="Add a short review (optional)"></textarea>
+  <button class="btn block" style="margin-top:16px" onclick="submitRate()">Submit rating</button>
+</section>
+
+<section class="screen" id="profile">
+  <div class="hero"><div class="big">🧑</div><h1>Alex</h1><p class="muted">⭐ 4.8 · Helping neighbours since 2024</p></div>
+  <div class="stats"><div class="stat"><b id="sDone">24</b>Tasks</div><div class="stat"><b>4.8</b>Rating</div><div class="stat"><b id="sRev">18</b>Reviews</div></div>
+  <button class="tog" id="availT" aria-pressed="true" onclick="toggleAvail(this)"><span><b>Available now</b><br><small class="muted" id="availS">Helpers and requesters can message you</small></span><span class="sw"></span></button>
+  <button class="tog" id="darkT" aria-pressed="false" onclick="toggleDark(this)"><span><b>Dark mode</b></span><span class="sw"></span></button>
+  <div id="helperOnly">
+    <h3 class="sec">Skills</h3><div class="tags"><span class="tag">Computer help</span><span class="tag">Phone help</span><span class="tag">Basic repairs</span></div>
+    <h3 class="sec">Previous work</h3><div class="work"><div>💻</div><div>📱</div><div>🔧</div></div>
+    <h3 class="sec">🚀 Paid Boost</h3>
+    <div class="box boost"><p class="muted" style="font-size:14px">Show your profile first to nearby people looking for help.</p>
+      <div class="chips" id="boostChips"><button class="chip on" onclick="pickBoost(this)">1 day · ₹49</button><button class="chip" onclick="pickBoost(this)">3 days · ₹129</button><button class="chip" onclick="pickBoost(this)">7 days · ₹249</button></div>
+      <button class="btn block" onclick="toast('Paid Boost checkout is coming soon')">Boost my profile</button></div>
+  </div>
+  <h3 class="sec">💳 Subscription</h3>
+  <div class="box"><div class="row" style="margin:0 0 6px"><b>Free plan</b><span class="pill">Active</span></div>
+    <p class="muted" style="font-size:14px" id="subDesc">Basic access</p>
+    <button class="btn ghost block" style="margin-top:12px" onclick="toast('Subscription upgrades are coming soon')">Upgrade plan</button></div>
+  <h3 class="sec">Saved helpers</h3><div id="saved" class="muted">Tap ★ on a card to save someone.</div>
+</section>
+
+<nav class="tabbar" id="tabbar">
+  <button class="tab on" data-t="discover" onclick="go('discover')"><span>🔍</span>Discover</button>
+  <button class="tab" data-t="chats" onclick="go('chats')"><span>💬</span>Chats<b class="n" id="nBadge" hidden>1</b></button>
+  <button class="tab" data-t="profile" onclick="go('profile')"><span>👤</span>Profile</button>
+</nav>
+
+<div class="scrim" id="scrim" onclick="closeSheets()"></div>
+
+<div class="sheet" id="fSheet">
+  <div class="grab"></div><h2>Filters</h2>
+  <div class="row"><span>Distance</span><b id="rLbl">3 km</b></div>
+  <input type="range" id="rad" min="0.5" max="5" step="0.5" value="3">
+  <div class="row"><span>Minimum rating</span></div>
+  <div class="chips" id="rateChips"></div>
+  <button class="tog" id="nowT" aria-pressed="false" onclick="this.setAttribute('aria-pressed',this.getAttribute('aria-pressed')!=='true')"><b>Available now</b><span class="sw"></span></button>
+  <div style="display:flex;gap:10px;margin-top:10px"><button class="btn ghost" onclick="resetF()">Reset</button><button class="btn" style="flex:1" onclick="applyF()">Show helpers</button></div>
+</div>
+
+<div class="sheet" id="dSheet"></div>
+</div>
+
+<script>
+const P=[
+{id:1,n:'Arun',e:'💻',s:'Computer & phone help',c:'Tech',r:4.8,d:0.8,p:'₹300/hr',a:true,tags:['Laptops','Wi‑Fi','Phones'],bio:'Fixes slow laptops, sets up phones and teaches basics patiently.',w:['💻','📱','🖨️'],rv:'Fixed my laptop in 20 minutes. Very patient.'},
+{id:2,n:'Priya',e:'📚',s:'Maths & science tutor',c:'Tutoring',r:4.9,d:1.1,p:'₹400/hr',a:true,tags:['Class 8–12','Physics','Maths'],bio:'Former teacher. Makes exam topics easy to follow.',w:['📐','🧪','📝'],rv:'My son’s marks went up in a month.'},
+{id:3,n:'Rahul',e:'🔧',s:'Home repair',c:'Repairs',r:4.6,d:1.4,p:'₹350/hr',a:false,tags:['Plumbing','Electrical','Fittings'],bio:'Quick fixes for taps, switches, shelves and more.',w:['🚿','💡','🪛'],rv:'Showed up on time and tidied up after.'},
+{id:4,n:'Meena',e:'🧹',s:'Cleaning help',c:'Cleaning',r:4.7,d:1.2,p:'₹250/hr',a:true,tags:['Deep clean','Kitchen','Move‑out'],bio:'Thorough, careful and friendly. Brings her own supplies.',w:['🧽','🪟','🛁'],rv:'The kitchen looked brand new.'},
+{id:5,n:'Vikram',e:'🚚',s:'Moving & delivery',c:'Moving',r:4.5,d:1.8,p:'₹500/trip',a:true,tags:['Mini‑truck','Furniture','Parcels'],bio:'Small moves and same‑day deliveries across the area.',w:['📦','🛋️','🚐'],rv:'Handled my sofa like glass.'},
+{id:6,n:'Sana',e:'📱',s:'Phone & app setup',c:'Tech',r:4.4,d:2.6,p:'₹200/hr',a:false,tags:['UPI','Backups','Seniors'],bio:'Helps parents and grandparents feel at ease with phones.',w:['📲','🔐','💬'],rv:'Explained everything slowly. Lovely.'}
+];
+const CATS=['All','Tech','Repairs','Tutoring','Cleaning','Moving'];
+const REPLIES=['Sure, I can help. When works for you?','Sounds good. Can you share a few more details?','I can be there within the hour.','Great. See you then!'];
+const QUICK=['What time works?','Where should we meet?','Can you share a quote?'];
+let role=null,F={cat:'All',rad:3,min:0,now:false,q:''},queue=[],cur=null,saved=new Set(),conv={},active=null,rating=0,rtag=new Set(),done=24,rev=18,unread=0,drag=null;
+const $=id=>document.getElementById(id);
+const toast=t=>{const e=$('toast');e.textContent=t;e.classList.add('on');clearTimeout(e._t);e._t=setTimeout(()=>e.classList.remove('on'),2200)};
+
+function go(id){
+  document.querySelectorAll('.screen').forEach(s=>s.classList.toggle('on',s.id===id));
+  const tabs=['discover','chats','profile'];
+  $('tabbar').classList.toggle('on',tabs.includes(id));
+  document.querySelectorAll('.tab').forEach(t=>t.classList.toggle('on',t.dataset.t===id));
+  if(id==='chats'){renderList();unread=0;$('nBadge').hidden=true}
+  if(id==='profile'){renderSaved();countUp();applyRoleProfile()}
+  closeSheets();
+}
+$('guestCats').innerHTML=['💻 Computer','🔧 Repairs','📚 Tutoring','🏠 Home','📱 Phone','🚚 Moving'].map(c=>`<div>${c}</div>`).join('');
+document.querySelectorAll('.role').forEach(b=>b.onclick=()=>{role=b.dataset.r;document.querySelectorAll('.role').forEach(x=>x.classList.toggle('sel',x===b))});
+$('roleGo').onclick=()=>{if(!role){toast('Pick how you want to use ItzB');return}
+  $('welcome').textContent={need:'Find someone who can help',helper:'Find people who need your skills',both:'Find help or help someone nearby'}[role];
+  build();go('discover')};
+
+/* filters */
+$('chips').innerHTML=CATS.map(c=>`<button class="chip${c==='All'?' on':''}" data-c="${c}">${c}</button>`).join('');
+$('chips').onclick=e=>{const c=e.target.dataset.c;if(!c)return;F.cat=c;document.querySelectorAll('#chips .chip').forEach(x=>x.classList.toggle('on',x.dataset.c===c));build()};
+$('q').oninput=e=>{F.q=e.target.value.toLowerCase().trim();build()};
+$('rateChips').innerHTML=[['Any',0],['3+',3],['4+',4],['4.5+',4.5]].map(([l,v],i)=>`<button class="chip${i?'':' on'}" data-v="${v}">⭐ ${l}</button>`).join('');
+$('rateChips').onclick=e=>{const v=e.target.dataset.v;if(v===undefined)return;F.min=+v;document.querySelectorAll('#rateChips .chip').forEach(x=>x.classList.toggle('on',x.dataset.v===v))};
+$('rad').oninput=e=>{$('rLbl').textContent=e.target.value+' km'};
+function applyF(){F.rad=+$('rad').value;F.now=$('nowT').getAttribute('aria-pressed')==='true';$('fDot').hidden=!(F.rad<3||F.min>0||F.now);build();closeSheets()}
+function resetF(){F={...F,rad:3,min:0,now:false};$('rad').value=3;$('rLbl').textContent='3 km';$('nowT').setAttribute('aria-pressed','false');document.querySelectorAll('#rateChips .chip').forEach((x,i)=>x.classList.toggle('on',!i));$('fDot').hidden=true;build();closeSheets()}
+function openSheet(id){$('scrim').classList.add('on');$(id).classList.add('on')}
+function closeSheets(){$('scrim').classList.remove('on');document.querySelectorAll('.sheet').forEach(s=>s.classList.remove('on'))}
+
+/* deck */
+function build(){
+  queue=P.filter(p=>(F.cat==='All'||p.c===F.cat)&&p.d<=F.rad&&p.r>=F.min&&(!F.now||p.a)&&(!F.q||(p.n+' '+p.s+' '+p.tags.join(' ')).toLowerCase().includes(F.q)));
+  render();
+}
+function card(p,cls){return `<div class="pc ${cls}" data-id="${p.id}"><div class="ph">${p.e}<span class="badge${p.a?'':' off'}">${p.a?'● Available now':'Busy today'}</span><span class="price">${p.p}</span></div>
+<div><h2>${p.n}</h2><p class="muted">${p.s}</p></div><p>⭐ <b>${p.r}</b> · 📍 ${p.d} km away</p><div class="tags">${p.tags.map(t=>`<span class="tag">${t}</span>`).join('')}</div>
+<span class="stamp y">ASK</span><span class="stamp n">SKIP</span></div>`}
+function render(){
+  const d=$('deck');
+  if(!queue.length){d.innerHTML=`<div class="empty"><span>🔎</span><h2>No more helpers here</h2><p class="muted">Widen the distance or pick another category.</p><button class="btn" onclick="F.cat='All';F.q='';$('q').value='';document.querySelectorAll('#chips .chip').forEach((x,i)=>x.classList.toggle('on',!i));resetF()">Show everyone</button></div>`;$('count').textContent='0 helpers';cur=null;return}
+  cur=queue[0];
+  d.innerHTML=(queue[1]?card(queue[1],'back'):'')+card(cur,'top');
+  $('count').textContent=`${queue.length} helper${queue.length>1?'s':''} nearby`;
+  bind(d.querySelector('.top'));
+}
+function bind(el){
+  el.onpointerdown=e=>{drag={x:e.clientX,y:e.clientY};el.setPointerCapture(e.pointerId);el.style.transition='none';el.style.cursor='grabbing'};
+  el.onpointermove=e=>{if(!drag)return;const dx=e.clientX-drag.x,dy=e.clientY-drag.y;drag.dx=dx;drag.dy=dy;
+    el.style.transform=`translate(${dx}px,${dy*.3}px) rotate(${dx/18}deg)`;
+    el.querySelector('.stamp.y').style.opacity=Math.min(Math.max(dx/110,0),1);
+    el.querySelector('.stamp.n').style.opacity=Math.min(Math.max(-dx/110,0),1)};
+  el.onpointerup=()=>{if(!drag)return;const{dx=0,dy=0}=drag;drag=null;el.style.transition='transform .3s';el.style.cursor='';
+    if(dx>110)fly('right');else if(dx<-110)fly('left');else if(dy<-120)fly('up');
+    else{el.style.transform='';el.querySelectorAll('.stamp').forEach(s=>s.style.opacity=0);if(Math.abs(dx)<6&&Math.abs(dy)<6)info()}};
+}
+function fly(dir){
+  const el=document.querySelector('#deck .top');if(!el||!cur)return;
+  const p=cur;el.style.transition='transform .35s ease,opacity .35s';
+  el.style.transform={right:'translateX(520px) rotate(22deg)',left:'translateX(-520px) rotate(-22deg)',up:'translateY(-520px)'}[dir];el.style.opacity=0;
+  setTimeout(()=>{queue.shift();render();
+    if(dir==='right')request(p);
+    if(dir==='up'){saved.add(p.id);toast('★ '+p.n+' saved')}
+  },300);
+}
+function info(){
+  if(!cur)return;const p=cur;
+  $('dSheet').innerHTML=`<div class="grab"></div><div style="display:flex;gap:14px;align-items:center"><div class="av" style="width:64px;height:64px;font-size:32px">${p.e}</div><div><h2>${p.n}</h2><p class="muted">${p.s} · ${p.p}</p></div></div>
+  <p style="margin-top:14px">${p.bio}</p><h3 class="sec">Previous work</h3><div class="work">${p.w.map(w=>`<div>${w}</div>`).join('')}</div>
+  <h3 class="sec">Latest review</h3><div class="rev">⭐ ${p.r} — “${p.rv}”</div>
+  <button class="btn block" style="margin-top:16px" onclick="closeSheets();fly('right')">Ask ${p.n} for help</button>`;
+  openSheet('dSheet');
+}
+
+/* chat */
+function request(p){
+  if(!conv[p.id])conv[p.id]={p,m:[{me:1,t:'Hi '+p.n+', could you help me? I found you on ItzB.'}],last:Date.now()};
+  toast('Help request sent to '+p.n);openThread(p.id);
+  setTimeout(()=>reply(p.id),1400);
+}
+function renderList(){
+  const ids=Object.keys(conv);
+  $('clist').innerHTML=ids.length?ids.map(i=>{const c=conv[i],l=c.m[c.m.length-1];return `<button class="convo" onclick="openThread(${i})"><div class="av">${c.p.e}</div><div><b>${c.p.n}</b><p>${l.me?'You: ':''}${l.t.replace(/</g,'&lt;')}</p></div></button>`}).join(''):`<div class="empty" style="padding:40px 0"><span>💬</span><h2>No chats yet</h2><p class="muted">Tap ✓ on a helper to send a request.</p><button class="btn" onclick="go('discover')">Browse helpers</button></div>`;
+}
+function openThread(id){
+  active=id;const c=conv[id];go('thread');$('tabbar').classList.remove('on');
+  $('tAv').textContent=c.p.e;$('tName').textContent=c.p.n;$('tSub').textContent=c.p.a?'● Online':'Replies later';
+  $('msgs').innerHTML='';c.m.forEach(m=>bubble(m));
+  $('qr').innerHTML=QUICK.map(q=>`<button class="chip" onclick="quick(this)">${q}</button>`).join('');
+}
+function bubble(m){const d=document.createElement('div');d.className='m'+(m.me?' me':'');d.textContent=m.t;$('msgs').appendChild(d);$('msgs').scrollTop=1e5}
+function send(t){
+  const i=$('mi');const text=(typeof t==='string'?t:i.value).trim();if(!text||active==null)return;
+  const m={me:1,t:text};conv[active].m.push(m);bubble(m);i.value='';
+  setTimeout(()=>reply(active),900);
+}
+function quick(b){send(b.textContent);b.remove()}
+$('mi').onkeydown=e=>{if(e.key==='Enter'){e.preventDefault();send()}};
+function reply(id){
+  const c=conv[id];if(!c)return;const inThread=active===id&&$('thread').classList.contains('on');
+  const tp=document.createElement('div');tp.className='m typing';tp.innerHTML='<i></i><i></i><i></i>';
+  if(inThread){$('msgs').appendChild(tp);$('msgs').scrollTop=1e5}
+  setTimeout(()=>{tp.remove();const m={t:REPLIES[Math.min(c.m.filter(x=>!x.me).length,REPLIES.length-1)]};c.m.push(m);
+    if(active===id&&$('thread').classList.contains('on'))bubble(m);else{unread++;$('nBadge').textContent=unread;$('nBadge').hidden=false;toast(c.p.n+' replied')}},1500);
+}
+function finish(){if(active==null)return;$('rSub').textContent='How was your help from '+conv[active].p.n+'?';rating=0;rtag.clear();$('rv').value='';drawStars();drawTags();go('rate')}
+function drawStars(){$('stars').innerHTML=[1,2,3,4,5].map(n=>`<button class="${n<=rating?'on':''}" onclick="rating=${n};drawStars()" aria-label="${n} stars">★</button>`).join('')}
+function drawTags(){$('rtags').innerHTML=['On time','Friendly','Great value','Skilled','Tidy'].map(t=>`<button class="chip${rtag.has(t)?' on':''}" onclick="rtag.has('${t}')?rtag.delete('${t}'):rtag.add('${t}');drawTags()">${t}</button>`).join('')}
+function submitRate(){
+  if(!rating){toast('Tap a star to rate');return}
+  done++;rev++;confetti();toast('Thanks for rating!');setTimeout(()=>go('profile'),700);
+}
+function confetti(){for(let i=0;i<28;i++){const s=document.createElement('span');s.className='cf';s.textContent=['⭐','🎉','✨','🐝'][i%4];s.style.left=Math.random()*100+'vw';s.style.setProperty('--dx',(Math.random()*160-80)+'px');s.style.animationDelay=Math.random()*.4+'s';document.body.appendChild(s);setTimeout(()=>s.remove(),2400)}}
+
+/* profile */
+function applyRoleProfile(){const isHelper=role==='helper'||role==='both';$('helperOnly').hidden=!isHelper;
+  $('subDesc').textContent=isHelper?'Basic helper listing · appear in nearby search':'Basic customer access · post requests and chat with helpers'}
+function pickBoost(b){document.querySelectorAll('#boostChips .chip').forEach(x=>x.classList.toggle('on',x===b))}
+function countUp(){const set=(id,v)=>{const e=$(id),s=+e.textContent;let n=s;const t=setInterval(()=>{n+=n<v?1:-1;e.textContent=n;if(n===v)clearInterval(t)},40);if(s===v)clearInterval(t)};set('sDone',done);set('sRev',rev)}
+function renderSaved(){const s=[...saved].map(i=>P.find(p=>p.id===i));$('saved').innerHTML=s.length?`<div class="tags">${s.map(p=>`<span class="tag">${p.e} ${p.n}</span>`).join('')}</div>`:'Tap ★ on a card to save someone.'}
+function toggleAvail(b){const on=b.getAttribute('aria-pressed')!=='true';b.setAttribute('aria-pressed',on);$('availS').textContent=on?'Helpers and requesters can message you':'You’re hidden from new requests'}
+function toggleDark(b){const on=b.getAttribute('aria-pressed')!=='true';b.setAttribute('aria-pressed',on);document.documentElement.dataset.theme=on?'dark':'light'}
+</script>
+</body>
+</html>

@@ -1,0 +1,66 @@
+* { box-sizing: border-box; margin: 0; padding: 0; }
+body { font-family: Arial, sans-serif; background: #fff; color: #000; }
+.screen { display: none; min-height: 100vh; }
+.screen.active { display: block; }
+#landing { text-align: center; padding-top: 20vh; }
+.logo-animation { font-size: 70px; font-weight: 900; animation: logoIn 1s ease; }
+#landing p { font-size: 20px; margin: 15px 0 35px; }
+@keyframes logoIn { from { opacity: 0; transform: scale(.5); } to { opacity: 1; transform: scale(1); } }
+button { border: none; background: #ffd21f; color: #000; padding: 13px 24px; border-radius: 25px; font-size: 16px; font-weight: bold; cursor: pointer; margin: 8px; transition: .2s; }
+button:hover { transform: translateY(-2px); }
+.guest { display: block; margin: 15px auto; background: #fff; border: 2px solid #000; }
+#roles { text-align: center; padding: 50px 20px; }
+#roles h2 { margin: 20px 0 30px; }
+.roles { display: flex; justify-content: center; gap: 20px; flex-wrap: wrap; margin-bottom: 30px; }
+.role-card { width: 260px; min-height: 190px; padding: 25px; border: 2px solid #eee; border-radius: 20px; cursor: pointer; transition: .25s; }
+.role-card:hover, .role-card.selected { border-color: #ffd21f; transform: translateY(-5px); }
+.role-card.selected { border-width: 3px; background: #fff8cf; }
+.icon { font-size: 40px; margin-bottom: 10px; }
+header { height: 70px; padding: 15px 5%; display: flex; align-items: center; justify-content: space-between; border-bottom: 1px solid #eee; }
+.brand { font-size: 32px; font-weight: 900; }
+nav button { background: #fff; }
+main { max-width: 800px; margin: auto; padding: 35px 20px; }
+.search-box input { width: 100%; padding: 16px; border: 2px solid #ddd; border-radius: 30px; font-size: 16px; margin: 20px 0; }
+.filter-button { background: #000; color: #fff; }
+.filters { display: none; background: #f7f7f7; padding: 20px; border-radius: 20px; margin-bottom: 25px; }
+.filters.show { display: grid; gap: 15px; }
+.filters label { display: flex; justify-content: space-between; align-items: center; gap: 12px; }
+.filters select, .filters input { padding: 10px; border-radius: 10px; border: 1px solid #ccc; }
+.swipe-area { display: flex; justify-content: center; margin-top: 25px; }
+.profile-card { width: 360px; min-height: 460px; padding: 30px; border-radius: 25px; box-shadow: 0 10px 35px rgba(0,0,0,.12); text-align: center; transition: transform .4s, opacity .4s; }
+.profile-image { height: 230px; background: #ffd21f; border-radius: 20px; display: flex; justify-content: center; align-items: center; font-size: 90px; margin-bottom: 20px; }
+.work-button { background: #fff; border: 2px solid #000; }
+.swipe-buttons { text-align: center; margin-top: 20px; }
+.swipe-buttons button { width: 65px; height: 65px; border-radius: 50%; font-size: 25px; }
+.skip { background: #fff; border: 2px solid #000; }
+.request { background: #ffd21f; }
+#swipeMessage { text-align: center; font-weight: bold; margin-top: 15px; }
+.profile-page { text-align: center; }
+.big-profile { width: 120px; height: 120px; margin: auto; background: #ffd21f; border-radius: 50%; display: flex; justify-content: center; align-items: center; font-size: 55px; }
+.rating { font-size: 20px; margin: 15px; }
+.stats { display: flex; justify-content: center; gap: 40px; margin: 30px 0; }
+.stats div { display: flex; flex-direction: column; }
+.stats strong { font-size: 25px; }
+.stats span { color: #666; font-size: 13px; }
+.profile-page h3 { margin-top: 25px; }
+.photos { display: flex; justify-content: center; gap: 10px; margin-top: 15px; }
+.photos div { width: 100px; height: 100px; background: #ffd21f; display: flex; justify-content: center; align-items: center; border-radius: 12px; }
+.messages { min-height: 350px; padding: 20px; background: #f7f7f7; border-radius: 20px; }
+.message { max-width: 70%; padding: 12px; margin: 10px; border-radius: 15px; }
+.received { background: #fff; }
+.sent { background: #ffd21f; margin-left: auto; }
+.chat-input { display: flex; margin-top: 15px; gap: 8px; }
+.chat-input input { flex: 1; padding: 14px; border-radius: 25px; border: 1px solid #ccc; }
+.complete { width: 100%; margin-top: 20px; }
+.rating-page { text-align: center; padding-top: 20vh; }
+.stars { font-size: 45px; margin: 25px; }
+.stars span { cursor: pointer; }
+.rating-page textarea { width: 100%; min-height: 120px; padding: 15px; border-radius: 15px; border: 1px solid #ccc; margin: 20px 0; }
+.categories { display: grid; grid-template-columns: repeat(2, 1fr); gap: 15px; margin: 25px 0; }
+.categories div { padding: 25px; background: #fff8cf; border-radius: 15px; font-weight: bold; }
+@media (max-width: 600px) {
+  .profile-card { width: 90%; }
+  header { padding: 12px 20px; }
+  nav button { padding: 8px; font-size: 13px; }
+  .stats { gap: 20px; }
+}
